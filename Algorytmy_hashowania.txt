@@ -1,0 +1,169 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\title{Algorytmy hashowania}
+\author{Filip Smol, Dawid Okoń}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Ten dokument omawia pięć popularnych algorytmów hashowania, w tym B-Crypt, oraz ich zastosowania, działanie, przykładowe implementacje i czas łamania hasła.
+\end{abstract}
+
+\section{Wstęp}
+Hashowanie jest kluczową techniką stosowaną w dziedzinach zabezpieczeń komputerowych, takich jak uwierzytelnianie, integralność danych i inne. Algorytmy hashowania przekształcają wejściowy ciąg danych w skróconą, zwykle wartość o stałej długości , znaną jako hash.
+
+\section{Algorytmy hashowania}
+
+\subsection{MD5}
+\subsubsection{Zastosowanie}
+MD5, czyli Message Digest Algorithm 5, był szeroko stosowany do tworzenia cyfrowych skrótów wiadomości. Głównym zastosowaniem MD5 jest weryfikacja integralności danych, takich jak pliki do pobrania, oraz sprawdzanie, czy dane nie zostały zmienione. Jednak z powodu swojej podatności na ataki, jego zastosowanie w bezpiecznych systemach jest obecnie odradzane.
+
+\subsubsection{Jak działa}
+MD5 przetwarza wejściowy ciąg bajtów o dowolnej długości i generuje z niego 128-bitowy (16-bajtowy) skrót. Algorytm dzieli dane wejściowe na bloki o długości 512 bitów, na które każdy jest przetwarzany oddzielnie w serii operacji bitowych, które obejmują funkcje pomocnicze, takie jak permutacje, podstawienia i dodawanie. Kluczowym aspektem jest to, że każdy krok jest zależny od poprzedniego, co sprawia, że odwrócenie procesu jest trudne.
+
+\subsubsection{Przykładowa implementacja}
+Poniżej znajduje się przykładowa implementacja algorytmu MD5 w języku Python:
+
+\begin{verbatim}
+import hashlib
+
+def md5_hash(string):
+    hash_object = hashlib.md5(string.encode())
+    return hash_object.hexdigest()
+
+# Przykład użycia
+print(md5_hash("Hello, world!"))
+\end{verbatim}
+
+\subsubsection{Czas łamania}
+Czas łamania MD5 zależy od mocy obliczeniowej atakującego oraz długości hasła. Dzięki postępowi w technologii obliczeń i dostępności mocy obliczeniowej, MD5 jest podatny na ataki brute-force i kolizje. Przykładowo, używając nowoczesnych GPU, hasła MD5 można złamać w ciągu kilku minut lub nawet sekund, w zależności od ich złożoności i długości.
+
+\subsection{SHA-256}
+\subsubsection{Zastosowanie}
+SHA-256 (Secure Hash Algorithm 256-bit) jest jednym z algorytmów rodziny SHA-2, używanym głównie do weryfikacji integralności danych oraz w systemach bezpieczeństwa, takich jak certyfikaty SSL/TLS. Jest również standardem w wielu rządowych aplikacjach w USA i stosowany jako część protokołu Bitcoin do weryfikacji transakcji.
+
+\subsubsection{Jak działa}
+SHA-256 przekształca wejściowe dane (n-bitowe) w unikalny 256-bitowy (32-bajtowy) skrót. Proces hashowania dzieli się na kilka etapów: inicjalizacja buforów hash, przetwarzanie bloków danych (każdy o wielkości 512 bitów) w serii iteracji, gdzie każda iteracja zawiera operacje mieszające dane wejściowe w skomplikowany i nieodwracalny sposób, wykorzystując funkcje logiczne i operacje na bitach.
+
+\subsubsection{Przykładowa implementacja}
+Przykład implementacji SHA-256 w języku Python z wykorzystaniem wbudowanego modułu `hashlib`:
+
+\begin{verbatim}
+import hashlib
+
+def sha256_hash(string):
+    hash_object = hashlib.sha256(string.encode())
+    return hash_object.hexdigest()
+
+# Przykład użycia
+print(sha256_hash("Hello, world!"))
+\end{verbatim}
+
+\subsubsection{Czas łamania}
+SHA-256 jest uznawany za bezpieczny przed atakami brute-force ze względu na swoją długość skrótu i konstrukcję. Teoretycznie, liczba możliwych kombinacji w SHA-256 wynosi 2^256, co czyni ataki brute-force niepraktycznymi z obecnym stanem technologii. W praktyce bezpieczeństwo SHA-256 zależy od odpowiedniego użytkowania (np. stosowanie soli w hashowaniu haseł), ale sam algorytm pozostaje solidną opcją bezpieczeństwa.
+
+
+\subsection{SHA-3}
+\subsubsection{Zastosowanie}
+SHA-3 (Secure Hash Algorithm 3), znany również jako Keccak, stanowi najnowsze rozszerzenie rodziny algorytmów SHA, zatwierdzone przez NIST w 2015 roku. Jest używany w aplikacjach wymagających wysokiej odporności na ataki kryptograficzne, takich jak systemy blockchain i kryptowaluty, oraz jako opcja bezpieczeństwa w rządowych i wojskowych systemach zabezpieczeń.
+
+\subsubsection{Jak działa}
+SHA-3 różni się od swoich poprzedników (SHA-1 i SHA-2) dzięki zastosowaniu konstrukcji matematycznej zwaną „sponge construction”, która pozwala na absorpcję wejściowych danych o dowolnej długości i wypieranie danych o określonej długości. Algorytm ten może produkować skróty o różnej długości, w zależności od wymagań bezpieczeństwa, poprzez regulowanie ilości danych „wypchniętych” z gąbki.
+
+\subsubsection{Przykładowa implementacja}
+Poniżej znajduje się przykładowa implementacja SHA-3 w języku Python, korzystająca z modułu `hashlib`, który obsługuje SHA-3 od wersji Python 3.6:
+
+\begin{verbatim}
+import hashlib
+
+def sha3_256_hash(string):
+    hash_object = hashlib.sha3_256(string.encode())
+    return hash_object.hexdigest()
+
+# Przykład użycia
+print(sha3_256_hash("Hello, world!"))
+\end{verbatim}
+
+\subsubsection{Czas łamania}
+Podobnie jak SHA-256, SHA-3 oferuje wysoki poziom bezpieczeństwa przed atakami brute-force, głównie ze względu na dużą przestrzeń skrótów i skomplikowaną konstrukcję wewnętrzną. SHA-3 jest zaprojektowany tak, aby był odporny na różnego rodzaju ataki kryptograficzne, w tym na ataki z użyciem technik znajdowania kolizji, które były skuteczne przeciwko starszym algorytmom SHA.
+
+\subsection{B-Crypt}
+\subsubsection{Zastosowanie}
+B-Crypt to algorytm hashowania haseł zaprojektowany specjalnie do zabezpieczania danych uwierzytelniających. Jest szeroko używany w wielu aplikacjach i systemach do bezpiecznego przechowywania haseł, ponieważ umożliwia łatwe wdrożenie mechanizmów obronnych przeciwko atakom siłowym, takim jak solenie i key stretching.
+
+\subsubsection{Jak działa}
+B-Crypt używa algorytmu Blowfish, symetrycznego szyfru blokowego, do generowania skrótów haseł. Kluczowym elementem jest możliwość określenia „czynnika pracy”, który określa, jak intensywne i czasochłonne będzie generowanie skrótu, przez co zwiększa się odporność na ataki. Proces hashowania obejmuje solenie hasła (dodanie losowego ciągu znaków do oryginalnego hasła przed hashowaniem), co zapobiega atakom słownikowym i użyciu gotowych tablic tzw. rainbow tables.
+
+\subsubsection{Przykładowa implementacja}
+Implementacja B-Crypt w Pythonie za pomocą biblioteki `bcrypt` jest prosta i bezpośrednia. Poniżej przykład użycia tej biblioteki:
+
+\begin{verbatim}
+import bcrypt
+
+def hash_password(password):
+    # Generowanie soli
+    salt = bcrypt.gensalt()
+    # Hashowanie hasła
+    hashed_password = bcrypt.hashpw(password.encode(), salt)
+    return hashed_password
+
+def check_password(password, hashed_password):
+    # Weryfikacja hasła
+    return bcrypt.checkpw(password.encode(), hashed_password)
+
+# Przykład użycia
+password = "securePassword123"
+hashed_password = hash_password(password)
+print(check_password(password, hashed_password))  # Zwróci True
+\end{verbatim}
+
+\subsubsection{Czas łamania}
+Czas łamania haseł zabezpieczonych przez B-Crypt zależy głównie od czynnika pracy, który został użyty podczas hashowania. Im wyższy czynnik pracy, tym dłużej trwa przetwarzanie hasła i tym trudniej jest złamać hash metodą brute-force. Dzięki temu mechanizmowi, B-Crypt pozostaje skuteczny nawet w obliczu rosnącej mocy obliczeniowej dostępnej dla potencjalnych atakujących.
+
+
+\subsection{Argon2}
+\subsubsection{Zastosowanie}
+Argon2, zwycięzca konkursu Password Hashing Competition w 2015 roku, jest nowoczesnym algorytmem hashowania haseł zaprojektowanym z myślą o maksymalnej odporności na ataki za pomocą sprzętu specjalistycznego, takiego jak FPGA i ASIC. Jest zalecany do stosowania w systemach wymagających silnego zabezpieczenia haseł, w tym w aplikacjach internetowych, bazach danych oraz systemach do zarządzania danymi użytkowników.
+
+\subsubsection{Jak działa}
+Argon2 wykorzystuje mechanizm zwiększania odporności na ataki siłowe i ataki przy użyciu specjalistycznego sprzętu, poprzez zastosowanie trzech kluczowych elementów: solenia (dodawanie losowego ciągu do hasła przed hashowaniem), mieszania (wykorzystanie dużych ilości pamięci) oraz key stretching (powtórzenia operacji hashowania). Argon2 oferuje trzy warianty: Argon2d, który jest odporny na ataki przez timingowe kanały boczne, Argon2i, zoptymalizowany pod kątem hashowania haseł i Argon2id, hybryda zapewniająca oba rodzaje ochrony.
+
+\subsubsection{Przykładowa implementacja}
+Implementacja Argon2 w języku Python może być wykonana za pomocą biblioteki `argon2-cffi`. Oto przykład jej użycia:
+
+\begin{verbatim}
+from argon2 import PasswordHasher
+
+ph = PasswordHasher()
+password = 'secretpassword'
+hashed = ph.hash(password)
+
+# Verifying the password
+try:
+    ph.verify(hashed, password)
+    print("Password is correct!")
+except:
+    print("Password is incorrect!")
+
+# Rehashing check to see if parameters need to be updated
+if ph.check_needs_rehash(hashed):
+    new_hash = ph.hash(password)
+\end{verbatim}
+
+\subsubsection{Czas łamania}
+Czas łamania Argon2 jest zależny od parametrów konfiguracyjnych, takich jak użyta ilość pamięci, liczba iteracji i równoległość. Te parametry pozwalają na dostosowanie Argon2 do oczekiwanego poziomu bezpieczeństwa i dostępnych zasobów sprzętowych, co sprawia, że ataki metodą brute-force stają się znacznie mniej wykonalne. Argon2 pozwala na elastyczne dostosowanie tych ustawień, aby zabezpieczenia mogły rosnąć wraz z postępem technologicznym.
+
+
+\section{Podsumowanie}
+W tym dokumencie przedstawiono pięć algorytmów hashowania, które są niezbędne dla zabezpieczania danych. Każdy algorytm ma swoje specyficzne zastosowania i różni się wydajnością oraz odpornością na ataki.
+
+\end{document}
